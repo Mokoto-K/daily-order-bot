@@ -11,6 +11,8 @@ secret: str = os.getenv("API_SECRET")
 # base_url = "https://www.bitmex.com/api/v1"
 # create_order_url = base_url+"/order"
 
+# TODO - Handle all null cases when querying bitmex for positions, accounts, and orders.
+
 mex = ccxt.bitmex({"apiKey": key, "secret": secret})
 
 # CLOSE OPEN POSITION
@@ -29,6 +31,7 @@ else:
 
 # Uncomment out once finished with testing, this will execute a market order currently, which we don't want yet.
 # mex.create_market_order("XBTUSDT", side=close_side, amount=open_size)
+print(f"close {open_direction} of {open_size} contracts...... add profit/loss message")
 
 # CANCEL ALL ORDERS
 mex.cancel_all_orders()
@@ -40,7 +43,7 @@ risk_amount = account_size * risk_limit /100
 current_price = mex.fetch_ticker("XBTUSDT")["bid"]
 
 # Arbitrary stop & profit price (Bad idea long term, but ok for testing atm)
-if nn.direction == "long":
+if nn.direction == "buy":
     side = "buy"
     stop_price = current_price - (current_price * 0.01)
     stop_difference = (stop_price - current_price) / current_price * -1
@@ -50,8 +53,8 @@ if nn.direction == "long":
     size = risk_amount / stop_difference
 
     # ENTER NEW POSITION
-    # mex.create_market_order("XBTUSDT", "limit", side, price=current_price, amount=size)
-
+    # mex.create_market_order("XBTUSDT", side, price=current_price, amount=size)
+    print(f"{side}, {size} contracts of XBTUSDT, at: {current_price}, stop: {stop_price}, take profit: {profit_price}")
     # ADD STOP AND TAKE PROFIT
     # mex.create_stop_market_order("XBTUSDT", "sell", size, stop_price)
     # mex.create_limit_order("XBTUSDT", "sell", size, profit_price)
@@ -66,8 +69,8 @@ else:
     size = risk_amount / stop_difference
 
     # ENTER NEW POSITION
-    # mex.create_market_order("XBTUSDT", "limit", side, price=current_price, amount=size)
-
+    # mex.create_market_order("XBTUSDT", side, price=current_price, amount=size)
+    print(f"{side}, {size} contracts of XBTUSDT, at: {current_price}, stop: {stop_price}, take profit: {profit_price}")
     # ADD STOP AND TAKE PROFIT
     # mex.create_stop_market_order("XBTUSDT", "buy", size, stop_price)
     # mex.create_limit_order("XBTUSDT", "buy", size, profit_price)
