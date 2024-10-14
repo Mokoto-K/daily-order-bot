@@ -13,7 +13,7 @@ ohlc_url = base_url+"/v5/market/kline"
 params = {"category": "linear",
           "symbol": "BTCUSDT",
           "interval": "D",
-          "limit": 100
+          "limit": 2
           }
 
 # Call the website
@@ -26,6 +26,12 @@ file_name = "BTC-1D-PRICE-HISTORY.csv"
 if not os.path.exists(file_name):
     with open(file_name, "w") as price_file:
         price_file.write("date,time,open,high,low,close,volume\n")
+else:
+    with open(file_name, "r") as price_file:
+        all_lines = price_file.readlines()
+        with open(file_name, "w") as price_file_2:
+            price_file_2.writelines(all_lines[:-1])
+
 
 # Get the list of prices and reverse the order so that they appear in ascending order
 price_list = [row for row in response.json()["result"]["list"]]

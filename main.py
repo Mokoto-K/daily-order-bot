@@ -1,3 +1,5 @@
+
+
 def main() -> None:
     # Close previous days trade
     # Update csv for current data from exchange
