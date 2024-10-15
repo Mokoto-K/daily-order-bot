@@ -123,7 +123,7 @@ target = target_encoder.fit_transform(price_data.target)
 price_data["target"] = target
 
 # Select the features to be used in training the nn
-X = price_data.filter(["day", "month", "daily_change","target"]) # "volume", "low", "high", , "volitility", "highs_from_open", "lows_from_open"
+X = price_data.filter(["day", "month", "daily_change",  "volitility","volume", "highs_from_open", "lows_from_open", "target",]) # "volume", "low", "high", , "volitility", "highs_from_open", "lows_from_open"
 
 # Split the training and test sets
 X_train_full, X_test, y_train_full, y_test = train_test_split(X.drop("target", axis=1), X.target, random_state = 42)
@@ -142,10 +142,12 @@ input_shape = X_train_full.shape[1]
 
 
 model = keras.models.Sequential([
-              keras.layers.InputLayer(shape=(input_shape,)),
-              keras.layers.Dense(300, activation="relu"),
-              keras.layers.Dense(100, activation="relu"),
-              keras.layers.Dense(2, activation="softmax")
+    keras.layers.InputLayer(shape=(input_shape,)),
+    keras.layers.Dense(357, activation="relu"),
+    keras.layers.Dense(325, activation="relu"),
+    keras.layers.Dense(95, activation="relu"),
+    keras.layers.Dense(25, activation="relu"),
+    keras.layers.Dense(2, activation="softmax")
           ])
 
 # model.compile(loss="binary_crossentropy",
@@ -156,7 +158,7 @@ model.compile(loss="sparse_categorical_crossentropy",
              optimizer=keras.optimizers.SGD(learning_rate=0.001),
              metrics=["accuracy"])
 
-history = model.fit(X_train, y_train, epochs=200, validation_data=(X_val, y_val))
+history = model.fit(X_train, y_train, epochs=175, validation_data=(X_val, y_val))
 
 model.evaluate(X_test, y_test)
 
@@ -166,7 +168,7 @@ c = price_data[-1:]
 price = [val for val in c.open]
 entry_price = price[0]
 
-c = c.filter(["day", "month", "daily_change"]) #, "volitility", "highs_from_open", "lows_from_open"
+c = c.filter(["day", "month", "daily_change",  "volitility","volume", "highs_from_open", "lows_from_open"]) #, "volitility", "highs_from_open", "lows_from_open"
 
 h = np.argmax(model.predict(c), axis=-1)
 
