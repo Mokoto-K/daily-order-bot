@@ -13,15 +13,20 @@ keras.utils.set_random_seed(69)
 # but it will affect the overall performance, so be mindful of that.
 config.experimental.enable_op_determinism()
 
+# File path for our data
 csv_path: str = "./BTC-1D-PRICE-HISTORY.csv"
+
+# Load the price data as a pandas dataframe
 price_data = pd.read_csv(csv_path)
 
+# Assign variables to all main points of data from our dataframe
 price_open = price_data.open
 price_close = price_data.close
 price_high = price_data.high
 price_low = price_data.low
 price_vol = price_data.volume
 
+#-------------Create our target labels for our algorithm---------------
 target = []
 
 for row in range(len(price_open)):
@@ -33,6 +38,7 @@ for row in range(len(price_open)):
 
 price_data["target"] = target
 
+#-------------Create day and month columns------------
 dates = price_data.date
 day_list = []
 month_list = []
@@ -49,6 +55,7 @@ price_data["month"] = month_list
 
 price_data = price_data.drop(["date", "time"], axis=1)
 
+#--------------Create daily open change column----------
 daily_change = [0]
 
 for row in range(len(price_open)):
@@ -61,7 +68,8 @@ for row in range(len(price_open)):
 
 price_data["daily_change"] = daily_change
 
-volitility = [0, 0 ]
+#-----------Create volitility column-----------
+volitility = [0, 0]
 
 for row in range(len(price_high)):
 
@@ -73,6 +81,7 @@ for row in range(len(price_high)):
 
 price_data["volitility"] = volitility
 
+#----------------Create highs, lows, highs distance and lows distance-------------
 highs = [0, 0]
 lows = [0, 0]
 highs_from_open = [0, 0]
@@ -95,6 +104,7 @@ price_data["low"] = lows
 price_data["highs_from_open"] = highs_from_open
 price_data["lows_from_open"] = lows_from_open
 
+#---------------Create volumn column---------
 volume = [0, 0]
 
 for row in range(len(price_vol)):
@@ -108,7 +118,6 @@ price_data["volume"] = volume
 price_data.tail(5)
 
 # Ecode all text features to numbers for the nn to use
-
 day_encoder = LabelEncoder()
 month_encoder = LabelEncoder()
 target_encoder = LabelEncoder()
@@ -136,11 +145,7 @@ y_val, y_train = y_train_full[:100], y_train_full[100:]
 # NN inputlayer
 input_shape = X_train_full.shape[1]
 
-
 # Build the nn model
-
-
-
 model = keras.models.Sequential([
     keras.layers.InputLayer(shape=(input_shape,)),
     keras.layers.Dense(357, activation="relu"),
@@ -150,28 +155,27 @@ model = keras.models.Sequential([
     keras.layers.Dense(2, activation="softmax")
           ])
 
-# model.compile(loss="binary_crossentropy",
-#              optimizer=keras.optimizers.SGD(learning_rate=0.001),
-#              metrics=["accuracy"])
-
 model.compile(loss="sparse_categorical_crossentropy",
              optimizer=keras.optimizers.SGD(learning_rate=0.001),
              metrics=["accuracy"])
 
 history = model.fit(X_train, y_train, epochs=175, validation_data=(X_val, y_val))
 
+# Evaluate the results on the test set
 model.evaluate(X_test, y_test)
 
-
+# Select the current column to predict a value on
 c = price_data[-1:]
 
-price = [val for val in c.open]
-entry_price = price[0]
+# price = [val for val in c.open]
+# entry_price = price[0]
 
 c = c.filter(["day", "month", "daily_change",  "volitility","volume", "highs_from_open", "lows_from_open"]) #, "volitility", "highs_from_open", "lows_from_open"
 
+# Make a prediction
 h = np.argmax(model.predict(c), axis=-1)
 
+# Return the diection determined by the prediction
 if h == 0:
     direction = "buy"
 else:
