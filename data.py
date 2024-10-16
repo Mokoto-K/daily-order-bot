@@ -64,55 +64,27 @@ def delete_record(num_of_lines: int) -> None:
         with open(FILE_NAME, "w") as price_file_2:
             price_file_2.writelines(all_lines[:-num_of_lines])
 
-# Create a file for the data if the file doesn't exist
-if not os.path.exists(FILE_NAME):
-    with open(FILE_NAME, "w") as new_file:
-        # Add the column headers to the file
-        new_file.write("date,time,open,high,low,close,volume\n")
 
-    # Param dictionary to download 1000 records (maximum allowed)
-    params = {"category": "linear",
-              "symbol": "BTCUSDT",
-              "interval": "D",
-              "limit": 1000
-              }
-    request_data(params)
+def update_csv() -> None:
+    # Create a file for the data if the file doesn't exist
+    if not os.path.exists(FILE_NAME):
+        with open(FILE_NAME, "w") as new_file:
+            # Add the column headers to the file
+            new_file.write("date,time,open,high,low,close,volume\n")
 
-# Get the last record in the csv file
-last_record: str = get_last_record()
-
-# Check if the days date matches the last record
-if todays_date != last_record:
-
-    # Param dictionary to download 1 record
-    params = {"category": "linear",
-              "symbol": "BTCUSDT",
-              "interval": "D",
-              "limit": 1
-              }
-
-    # download one more record
-    request_data(params)
-    # get the last record... again
-    last_record: str = get_last_record()
-
-    # Check if the dates match again
-    if todays_date == last_record:
-        print("Dates match")
-        delete_record(2)
-
-        # Param dictionary to download 1 record
+        # Param dictionary to download 1000 records (maximum allowed)
         params = {"category": "linear",
                   "symbol": "BTCUSDT",
                   "interval": "D",
-                  "limit": 2
+                  "limit": 1000
                   }
-
-        # download one more record
         request_data(params)
-    else:
-        print(todays_date, type(todays_date), last_record, type(last_record))
-        delete_record(2)
+
+    # Get the last record in the csv file
+    last_record: str = get_last_record()
+
+    # Check if the days date matches the last record
+    if todays_date != last_record:
 
         # Param dictionary to download 1 record
         params = {"category": "linear",
@@ -123,5 +95,39 @@ if todays_date != last_record:
 
         # download one more record
         request_data(params)
+        # get the last record... again
+        last_record: str = get_last_record()
+
+        # Check if the dates match again
+        if todays_date == last_record:
+            print("Dates match")
+            delete_record(2)
+
+            # Param dictionary to download 1 record
+            params = {"category": "linear",
+                      "symbol": "BTCUSDT",
+                      "interval": "D",
+                      "limit": 2
+                      }
+
+            # download one more record
+            request_data(params)
+        else:
+            print(todays_date, type(todays_date), last_record, type(last_record))
+            delete_record(2)
+
+            # Param dictionary to download 1 record
+            params = {"category": "linear",
+                      "symbol": "BTCUSDT",
+                      "interval": "D",
+                      "limit": 1
+                      }
+
+            # download one more record
+            request_data(params)
+
+    print("CSV UPDATED")
 
 
+if __name__ == "__main__":
+    update_csv()

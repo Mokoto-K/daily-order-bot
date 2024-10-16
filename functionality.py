@@ -2,6 +2,8 @@ import os
 from dotenv import load_dotenv
 import ccxt
 import bot as nn
+import data
+
 
 load_dotenv()
 key: str = os.getenv("API_KEY")
@@ -42,8 +44,11 @@ risk_limit = 0.01
 risk_amount = account_size * risk_limit /100
 current_price = mex.fetch_ticker("XBTUSDT")["bid"]
 
+# Update the csv file
+data.update_csv()
+
 # Arbitrary stop & profit price (Bad idea long term, but ok for testing atm)
-if nn.direction == "buy":
+if nn.run_bot() == "buy":
     side = "buy"
     stop_price = current_price - (current_price * 0.01)
     stop_difference = (stop_price - current_price) / current_price * -1
@@ -75,3 +80,9 @@ else:
     # mex.create_stop_market_order("XBTUSDT", "buy", size, stop_price)
     # mex.create_limit_order("XBTUSDT", "buy", size, profit_price)
 
+
+
+
+
+if __name__ == "__main__":
+    main()
