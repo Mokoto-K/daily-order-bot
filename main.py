@@ -2,8 +2,10 @@
 import os
 from dotenv import load_dotenv
 import ccxt
-import bot as nn
+import algorithm as algo
 import data
+
+RISK = 0.01
 
 load_dotenv()
 key: str = os.getenv("API_KEY")
@@ -18,20 +20,27 @@ secret: str = os.getenv("API_SECRET")
 mex = ccxt.bitmex({"apiKey": key, "secret": secret})
 
 
+# TODO - Add logging information about the position
 def close_position() -> None:
-    # CLOSE OPEN POSITION
-    # Get the size of the open position
-    open_size = mex.fetch_positions()[0]["contracts"]
+    """Queries bitmex for your current open position and market closes it immediately"""
+    print("CLOSING LAST POSITION")
+
+    try:
+        # Get the size of the open position
+        position = mex.fetch_positions()[0]
+        # TODO - Find out what error is thrown if no order is open
+    except Exception:
+        print("There was no position to close, moving on to cancelling open orders")
+        return
 
     # Get the direction of the current position
-    open_direction = mex.fetch_positions()[0]["side"]
+    open_direction: str = position["side"]
+    open_size: float = position["contracts"]
 
     if open_direction == "long":
         close_side = "sell"
-    elif open_direction == "short":
-        close_side = "buy"
     else:
-        close_side = None
+        close_side = "buy"
 
     # Uncomment out once finished with testing, this will execute a market order currently, which we don't want yet.
     # mex.create_market_order("XBTUSDT", side=close_side, amount=open_size)
@@ -39,19 +48,25 @@ def close_position() -> None:
 
 
 def cancel_all() -> None:
+    """Cancels all orders that you have open on bitmex"""
+    print("CANCELLING ORDERS")
     # CANCEL ALL ORDERS
     mex.cancel_all_orders()
+    print("All order from the last position have been cancelled")
 
 
-def execute_trade() -> None:
+def execute_trade(risk: float) -> None:
+    """"""
+    print("RUNNING ALGO TO DETERMINE NEXT DIRECTION AND POSITION SIZE")
     # CALCULATE NEXT POSITION SIZE
     account_size = mex.fetch_balance()["USDT"]["total"]
-    risk_limit = 0.01
-    risk_amount = account_size * risk_limit /100
+    risk_limit = risk
+    risk_amount = account_size * risk_limit / 100
     current_price = mex.fetch_ticker("XBTUSDT")["bid"]
 
+    direction: str = algo.run_bot()
     # Arbitrary stop & profit price (Bad idea long term, but ok for testing atm)
-    if nn.run_bot() == "buy":
+    if direction == "buy":
         side = "buy"
         stop_price = current_price - (current_price * 0.01)
         stop_difference = (stop_price - current_price) / current_price * -1
@@ -97,7 +112,8 @@ def main() -> None:
     # Get direction of trade from nn
     # Get entry, exit and size for trade
     # Execute trade
-    execute_trade()
+    execute_trade(RISK)
 
 if __name__ == "__main__":
     main()
+

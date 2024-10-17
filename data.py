@@ -15,8 +15,10 @@ ohlc_url: str = base_url + "/v5/market/kline"
 # TODO - Make a more modular way of creating a file name
 FILE_NAME: str = "BTC-1D-PRICE-HISTORY.csv"
 
-
+# TODO - Add more logging lines
 def request_data(data_params) -> None:
+    print(f"UPDATING {data_params} RECORDS IN CSV FILE")
+
     # Call the website
     response = r.get(ohlc_url, params=data_params)
 
@@ -44,10 +46,11 @@ def request_data(data_params) -> None:
             writer.writerow([date, time, open_price, high_price, low_price, close_price, volume])
 
     # TODO - Add better logging message
-    print("Downloaded Data")
+
 
 
 def get_last_record() -> str:
+    print("RETRIEVING LAST RECORD FROM CSV")
     # open the existing file
     with open(FILE_NAME, "r") as price_file:
         # get a hold of the contents of the file
@@ -59,6 +62,7 @@ def get_last_record() -> str:
 
 
 def delete_record(num_of_lines: int) -> None:
+    print(f"DELETING {num_of_lines} RECORD(S) FROM CSV")
     with open(FILE_NAME, "r") as price_file:
         all_lines = price_file.readlines()
         with open(FILE_NAME, "w") as price_file_2:
@@ -66,10 +70,13 @@ def delete_record(num_of_lines: int) -> None:
 
 
 def update_csv() -> None:
+    print("CHECKING IF NEW DATA IS AVAILABLE FOR CSV FILE")
+
     # Create a file for the data if the file doesn't exist
     if not os.path.exists(FILE_NAME):
         with open(FILE_NAME, "w") as new_file:
             # Add the column headers to the file
+            print("CREATING CSV")
             new_file.write("date,time,open,high,low,close,volume\n")
 
         # Param dictionary to download 1000 records (maximum allowed)
@@ -100,7 +107,6 @@ def update_csv() -> None:
 
         # Check if the dates match again
         if todays_date == last_record:
-            print("Dates match")
             delete_record(2)
 
             # Param dictionary to download 1 record

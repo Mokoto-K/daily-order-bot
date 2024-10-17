@@ -1,9 +1,7 @@
 from tensorflow import keras, config
-import tensorflow as tf
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-import matplotlib.pyplot as plt
 import numpy as np
 
 def run_bot():

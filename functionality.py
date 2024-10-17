@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 import ccxt
-import bot as nn
+import algorithm as nn
 import data
 
 
