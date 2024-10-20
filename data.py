@@ -135,5 +135,10 @@ def update_csv() -> None:
     print("CSV UPDATED")
 
 
-if __name__ == "__main__":
+def main():
     update_csv()
+
+
+if __name__ == "__main__":
+    main()
+
