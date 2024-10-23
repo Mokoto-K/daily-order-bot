@@ -97,7 +97,7 @@ def update_csv() -> None:
         params = {"category": "linear",
                   "symbol": "BTCUSDT",
                   "interval": "D",
-                  "limit": 1
+                  "limit": 3
                   }
 
         # download one more record

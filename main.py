@@ -8,7 +8,7 @@ from data import main as update_csv
 
 def main() -> None:
     update_csv()
-    run_program()
+    # run_program()
 
 
 if __name__ == "__main__":
