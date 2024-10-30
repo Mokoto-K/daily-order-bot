@@ -1,7 +1,7 @@
 requests
 python-dotenv
 ccxt
-tensorflow
+#tensorflow # Only un comment if you wanna use the bot, else it's a waste of a download and time
 pandas
 matplotlib
 numpy

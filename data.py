@@ -4,6 +4,7 @@ import requests as r
 import datetime as dt
 
 # TODO - Perhaps make it a function that can accept any set of params to create a file for
+# TODO - If you dont update this daily, it is completely broken as it will not fill in the missing days, only the last 1
 
 # get today's date and store it with a string of time format that is identical to what is saved to our csv
 todays_date: str = dt.datetime.now().strftime("%a-%d-%b-%y")
@@ -79,6 +80,7 @@ def update_csv() -> None:
             print("CREATING CSV")
             new_file.write("date,time,open,high,low,close,volume\n")
 
+        # todo this logic is actually broken because everything after it runs too which messes the file I think
         # Param dictionary to download 1000 records (maximum allowed)
         params = {"category": "linear",
                   "symbol": "BTCUSDT",
@@ -97,7 +99,7 @@ def update_csv() -> None:
         params = {"category": "linear",
                   "symbol": "BTCUSDT",
                   "interval": "D",
-                  "limit": 3
+                  "limit": 3    # Change this param to a larger number if you dont update csv daily, default 3
                   }
 
         # download one more record
