@@ -147,18 +147,15 @@ def run_bot():
     # Build the nn model
     model = keras.models.Sequential([
         keras.layers.InputLayer(shape=(input_shape,)),
-        keras.layers.Dense(357, activation="relu"),
-        keras.layers.Dense(325, activation="relu"),
-        keras.layers.Dense(95, activation="relu"),
-        keras.layers.Dense(25, activation="relu"),
-        keras.layers.Dense(2, activation="softmax")
+        keras.layers.Dense(4, activation="relu"),
+        keras.layers.Dense(1, activation="sigmoid")
               ])
 
-    model.compile(loss="sparse_categorical_crossentropy",
+    model.compile(loss="binary_crossentropy",
                  optimizer=keras.optimizers.SGD(learning_rate=0.001),
                  metrics=["accuracy"])
 
-    history = model.fit(X_train, y_train, epochs=175, validation_data=(X_val, y_val))
+    history = model.fit(X_train, y_train, epochs=30, validation_data=(X_val, y_val))
 
     # Evaluate the results on the test set
     model.evaluate(X_test, y_test)

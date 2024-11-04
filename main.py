@@ -7,9 +7,10 @@ from data import main as update_csv
 #  Until I build a better algo or have a better idea of how I want the flow of this to work, im done.
 
 def main() -> None:
-    update_csv()
-    # run_program()
-
+#    update_csv()
+#    run_program()
+    import algorithm
+    algorithm.run_bot()
 
 if __name__ == "__main__":
     main()
