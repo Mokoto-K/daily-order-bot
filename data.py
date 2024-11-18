@@ -99,7 +99,7 @@ def update_csv() -> None:
         params = {"category": "linear",
                   "symbol": "BTCUSDT",
                   "interval": "D",
-                  "limit": 3    # Change this param to a larger number if you dont update csv daily, default 3
+                  "limit": 30    # Change this param to a larger number if you dont update csv daily, default 3
                   }
 
         # download one more record
